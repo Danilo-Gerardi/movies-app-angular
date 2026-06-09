@@ -1,0 +1,58 @@
+---
+
+## PHASE 0 — Context (send this once, keep it pinned)
+
+You are a senior Angular architect and frontend engineer.
+Your task is to build a production-ready SPA using a spec-driven development approach.
+Generate code **incrementally**, one phase at a time, only when instructed.
+At each step: explain decisions briefly, keep code minimal but scalable.
+
+### Tech stack
+- Angular (latest stable)
+- Node.js (latest LTS)
+- Angular Material
+- TailwindCSS
+- TypeScript (strict mode)
+- RxJS
+- NgRx (store, effects, selectors)
+- ESLint + Prettier
+
+### Architecture rules
+- Standalone components only — no NgModules
+- Feature-based folder structure
+- Separation of concerns: components / services / state
+- Lazy-loaded routes per feature
+- Reusable UI components in `shared/`
+
+### Routing contract (read carefully before generating any route)
+- `/` → SearchPage (default)
+- `/collections` → CollectionsPage (lazy)
+- `/collections/new` → CreateCollectionPage (lazy)
+- `/collections/:id` → CollectionDetailPage (lazy)
+- Movie Details **must use Angular auxiliary routes** so the URL reflects the open dialog state:
+  - Route: `/(dialog:movies/:id)`
+  - A `DialogGuard` (CanActivate) intercepts this auxiliary outlet, opens `MatDialog` with the movie id, and redirects back on close
+  - This means `MatDialog` is opened **programmatically from the guard**, not from a component click handler
+  - The URL must update when the dialog opens and clear when it closes
+  - Do NOT open the dialog directly from a component — always go through the router
+
+### API
+- Base URL: `https://api.themoviedb.org/3`
+- API key: `85204a8cc33baf447559fb6d51b18313`
+- All HTTP calls abstracted in `TmdbApiService`
+- `HttpInterceptor` injects `api_key` on every request automatically
+- Handle loading states and errors in NgRx effects
+
+### State (NgRx slices)
+- `movies` slice: search results, pagination, loading, error
+- `collections` slice: list of collections synced to localStorage via an effect
+
+### Storage
+- `CollectionStorageService` wraps localStorage (no direct localStorage calls in components or effects)
+
+### Quality
+- TypeScript strict mode throughout
+- No `any` types
+- Unit tests for all services (Jest or Jasmine)
+
+---
