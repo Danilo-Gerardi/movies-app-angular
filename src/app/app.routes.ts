@@ -5,7 +5,15 @@ import { DialogGuard } from './core/guards/dialog.guard';
 export const routes: Routes = [
   {
     path: '',
-    loadComponent: () => import('./features/search/search.page').then((m) => m.SearchPage),
+    redirectTo: 'home',
+    pathMatch: 'full',
+  },
+  {
+    path: 'home',
+    loadComponent: () =>
+      import('./features/search/components/search-page/search-page.component').then(
+        (m) => m.SearchPageComponent,
+      ),
   },
   {
     path: 'collections',

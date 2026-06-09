@@ -1,0 +1,57 @@
+<main class="search-page">
+  <header class="search-page__header">
+    <h1 class="search-page__title">Search Movies</h1>
+
+    <form class="search-page__form" [formGroup]="searchForm" (ngSubmit)="onSubmit()">
+      <mat-form-field class="search-page__field" appearance="outline">
+        <mat-label>Search</mat-label>
+        <input
+          matInput
+          formControlName="query"
+          appAlphanumeric
+          placeholder="e.g. matrix"
+          [errorStateMatcher]="errorStateMatcher"
+        />
+        <mat-error>{{ queryErrorMessage() }}</mat-error>
+      </mat-form-field>
+
+      <button mat-flat-button color="primary" type="submit" [disabled]="searchForm.invalid">
+        Search
+      </button>
+    </form>
+  </header>
+
+  @if (loading$ | async) {
+    <div class="search-page__loading">
+      <mat-spinner diameter="48" />
+    </div>
+  }
+
+  @if (error$ | async; as error) {
+    <p class="search-page__error" role="alert">{{ error }}</p>
+  }
+
+  @if (results$ | async; as results) {
+    @if (results.length > 0) {
+      <div class="search-page__grid">
+        @for (movie of results; track movie.id) {
+          <app-movie-card [movie]="movie" />
+        }
+      </div>
+
+      @if (page$ | async; as page) {
+        @if (totalPages$ | async; as totalPages) {
+          @if (totalPages > 0) {
+            <app-pagination
+              [currentPage]="page"
+              [totalPages]="totalPages"
+              (pageChange)="onPageChange($event)"
+            />
+          }
+        }
+      }
+    } @else if (!(loading$ | async) && (query$ | async)) {
+      <p class="search-page__empty">No movies found.</p>
+    }
+  }
+</main>

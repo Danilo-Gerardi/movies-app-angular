@@ -6,7 +6,7 @@ import {
   Validator,
 } from '@angular/forms';
 
-const ALPHANUMERIC_PATTERN = /^[a-zA-Z0-9]+$/;
+const ALPHANUMERIC_PATTERN = /^[a-zA-Z0-9\s]+$/;
 const MIN_LENGTH = 3;
 
 @Directive({
