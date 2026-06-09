@@ -1,0 +1,16 @@
+<div class="flex items-center justify-center gap-4 py-4">
+  <button mat-stroked-button type="button" [disabled]="currentPage <= 1" (click)="onPrevious()">
+    Previous
+  </button>
+
+  <span class="text-sm text-gray-700">Page {{ currentPage }} of {{ totalPages }}</span>
+
+  <button
+    mat-stroked-button
+    type="button"
+    [disabled]="currentPage >= totalPages"
+    (click)="onNext()"
+  >
+    Next
+  </button>
+</div>

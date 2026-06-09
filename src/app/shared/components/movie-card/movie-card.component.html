@@ -1,0 +1,17 @@
+<button
+  type="button"
+  class="movie-card"
+  (click)="onCardClick()"
+  [attr.aria-label]="'View details for ' + movie.title"
+>
+  @if (posterUrl()) {
+    <img class="movie-card__poster" [src]="posterUrl()" [alt]="movie.title" loading="lazy" />
+  } @else {
+    <div class="movie-card__poster movie-card__poster--placeholder">No image</div>
+  }
+
+  <div class="movie-card__body">
+    <h3 class="movie-card__title">{{ movie.title }}</h3>
+    <p class="movie-card__rating">{{ movie.vote_average | number: '1.1-1' }} / 10</p>
+  </div>
+</button>

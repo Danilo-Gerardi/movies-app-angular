@@ -41,6 +41,7 @@ export const collectionsReducer = createReducer(
   on(
     CollectionsActions.createCollection,
     CollectionsActions.addMovie,
+    CollectionsActions.addMoviesToCollection,
     CollectionsActions.removeMovie,
     CollectionsActions.deleteCollection,
     (state) => ({
@@ -55,7 +56,11 @@ export const collectionsReducer = createReducer(
     loading: false,
     error: null,
   })),
-  on(CollectionsActions.addMovieSuccess, CollectionsActions.removeMovieSuccess, (state, { collection }) => ({
+  on(
+    CollectionsActions.addMovieSuccess,
+    CollectionsActions.addMoviesToCollectionSuccess,
+    CollectionsActions.removeMovieSuccess,
+    (state, { collection }) => ({
     ...state,
     collections: upsertCollection(state.collections, collection),
     loading: false,
@@ -70,6 +75,7 @@ export const collectionsReducer = createReducer(
   on(
     CollectionsActions.createCollectionFailure,
     CollectionsActions.addMovieFailure,
+    CollectionsActions.addMoviesToCollectionFailure,
     CollectionsActions.removeMovieFailure,
     CollectionsActions.deleteCollectionFailure,
     (state, { error }) => ({

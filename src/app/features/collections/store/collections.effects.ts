@@ -47,6 +47,33 @@ export class CollectionsEffects implements OnInitEffects {
     ),
   );
 
+  addMoviesToCollection$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(CollectionsActions.addMoviesToCollection),
+      switchMap(({ collectionId, movies }) => {
+        try {
+          let collection = this.storage.getAll().find((item) => item.id === collectionId);
+
+          if (!collection) {
+            throw new Error(`Collection not found: ${collectionId}`);
+          }
+
+          for (const movie of movies) {
+            collection = this.storage.addMovie(collectionId, movie);
+          }
+
+          return of(CollectionsActions.addMoviesToCollectionSuccess({ collection }));
+        } catch (error: unknown) {
+          return of(
+            CollectionsActions.addMoviesToCollectionFailure({
+              error: this.resolveErrorMessage(error),
+            }),
+          );
+        }
+      }),
+    ),
+  );
+
   addMovie$ = createEffect(() =>
     this.actions$.pipe(
       ofType(CollectionsActions.addMovie),

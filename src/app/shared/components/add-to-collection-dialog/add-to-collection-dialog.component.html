@@ -1,0 +1,38 @@
+<h2 mat-dialog-title>Add to Collection</h2>
+
+<mat-dialog-content>
+  <p class="mb-4 text-sm text-gray-600">
+    Select a collection for {{ data.movies.length }} movie{{ data.movies.length === 1 ? '' : 's' }}.
+  </p>
+
+  @if (collections$ | async; as collections) {
+    @if (collections.length === 0) {
+      <p class="text-sm text-gray-500">No collections available. Create one first.</p>
+    } @else {
+      <mat-radio-group
+        class="flex flex-col gap-2"
+        [value]="selectedCollectionId()"
+        (change)="selectCollection($event.value)"
+      >
+        @for (collection of collections; track collection.id) {
+          <mat-radio-button [value]="collection.id">
+            {{ collection.title }} ({{ collection.movies.length }} movies)
+          </mat-radio-button>
+        }
+      </mat-radio-group>
+    }
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" mat-dialog-close>Cancel</button>
+  <button
+    mat-flat-button
+    type="button"
+    color="primary"
+    [disabled]="!selectedCollectionId()"
+    (click)="confirm()"
+  >
+    Add
+  </button>
+</mat-dialog-actions>
