@@ -1,2 +1,7 @@
-// Root state shape; feature slices are registered in later phases.
-export type AppState = Record<string, never>;
+import { CollectionsState } from '../features/collections/store/collections.reducer';
+import { MoviesState } from '../features/search/store/movies.reducer';
+
+export interface AppState {
+  movies: MoviesState;
+  collections: CollectionsState;
+}
