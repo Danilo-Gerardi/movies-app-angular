@@ -19,6 +19,12 @@ export interface TmdbGenre {
   name: string;
 }
 
+export interface TmdbSpokenLanguage {
+  english_name: string;
+  iso_639_1: string;
+  name: string;
+}
+
 export interface TmdbMovieDetails {
   id: number;
   title: string;
@@ -28,9 +34,12 @@ export interface TmdbMovieDetails {
   release_date: string;
   vote_average: number;
   vote_count: number;
+  budget: number;
+  revenue: number;
   runtime: number | null;
   genres: TmdbGenre[];
   tagline: string;
+  spoken_languages: TmdbSpokenLanguage[];
 }
 
 export interface TmdbGuestSessionResponse {

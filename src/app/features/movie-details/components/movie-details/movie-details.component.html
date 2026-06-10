@@ -1,0 +1,116 @@
+<div class="movie-details">
+  <div class="movie-details__header">
+    <h2 mat-dialog-title class="movie-details__title">Movie Details</h2>
+    <button
+      type="button"
+      mat-icon-button
+      class="movie-details__close"
+      aria-label="Close movie details"
+      (click)="close()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <mat-dialog-content class="movie-details__content">
+    @if (loading()) {
+      <div class="movie-details__state">
+        <mat-spinner diameter="40" aria-label="Loading movie details"></mat-spinner>
+      </div>
+    } @else if (error()) {
+      <p class="movie-details__error" role="alert">{{ error() }}</p>
+    } @else if (movie(); as details) {
+      <div class="movie-details__layout">
+        @if (posterUrl()) {
+          <img
+            class="movie-details__poster"
+            [src]="posterUrl()"
+            [alt]="details.title + ' poster'"
+          />
+        } @else {
+          <div class="movie-details__poster movie-details__poster--placeholder">No poster</div>
+        }
+
+        <div class="movie-details__info">
+          <h3 class="movie-details__name">{{ details.title }}</h3>
+          <p class="movie-details__overview">{{ details.overview || 'No overview available.' }}</p>
+
+          <dl class="movie-details__meta">
+            <div class="movie-details__meta-item">
+              <dt>Release date</dt>
+              <dd>{{ details.release_date | date: 'mediumDate' }}</dd>
+            </div>
+            <div class="movie-details__meta-item">
+              <dt>Budget</dt>
+              <dd>{{ details.budget | currency: 'USD' : 'symbol' : '1.0-0' }}</dd>
+            </div>
+            <div class="movie-details__meta-item">
+              <dt>Revenue</dt>
+              <dd>{{ details.revenue | currency: 'USD' : 'symbol' : '1.0-0' }}</dd>
+            </div>
+            <div class="movie-details__meta-item">
+              <dt>Rating</dt>
+              <dd>
+                {{ details.vote_average | number: '1.1-1' }} / 10
+                <span class="movie-details__vote-count">({{ details.vote_count | number }} votes)</span>
+              </dd>
+            </div>
+            <div class="movie-details__meta-item">
+              <dt>Spoken languages</dt>
+              <dd>{{ spokenLanguages() }}</dd>
+            </div>
+          </dl>
+
+          <section class="movie-details__rating" aria-label="Rate this movie">
+            <h4 class="movie-details__rating-title">Rate this movie</h4>
+            <p class="movie-details__rating-hint">Select a rating from 0.5 to 10 in half-star steps.</p>
+
+            <div class="movie-details__stars" (mouseleave)="onStarLeave()">
+              @for (starIndex of starIndexes; track starIndex) {
+                <button
+                  type="button"
+                  class="movie-details__star"
+                  [attr.aria-label]="'Rate ' + starIndex + ' stars'"
+                  (click)="onStarClick(starIndex, $event)"
+                  (mousemove)="onStarHover(starIndex, $event)"
+                >
+                  <mat-icon>{{ starIcon(starIndex) }}</mat-icon>
+                </button>
+              }
+            </div>
+
+            @if (selectedRating() !== null) {
+              <p class="movie-details__selected-rating">Selected: {{ selectedRating() }}/10</p>
+            }
+
+            <button
+              type="button"
+              mat-flat-button
+              color="primary"
+              class="movie-details__confirm-rating"
+              [disabled]="selectedRating() === null || ratingInProgress()"
+              (click)="confirmRating()"
+            >
+              @if (ratingInProgress()) {
+                Submitting...
+              } @else {
+                Confirm rating
+              }
+            </button>
+
+            @if (ratingFeedback(); as feedback) {
+              <p
+                class="movie-details__rating-feedback"
+                [class.movie-details__rating-feedback--success]="feedback.type === 'success'"
+                [class.movie-details__rating-feedback--error]="feedback.type === 'error'"
+                role="status"
+              >
+                {{ feedback.message }}
+              </p>
+            }
+          </section>
+        </div>
+      </div>
+    }
+  </mat-dialog-content>
+</div>

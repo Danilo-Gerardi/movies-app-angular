@@ -1,6 +1,6 @@
 import { DecimalPipe } from '@angular/common';
 import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { TMDB_IMAGE_BASE_URL } from '../../../core/constants/tmdb-api.constants';
 import { Movie } from '../../models/movie.model';
@@ -18,9 +18,14 @@ export class MovieCardComponent {
   @Input({ required: true }) movie!: Movie;
   @Output() selected = new EventEmitter<Movie>();
 
+
+  constructor(private activatedRoute: ActivatedRoute) {}
+
   onCardClick(): void {
     this.selected.emit(this.movie);
-    void this.router.navigate([{ outlets: { dialog: ['movies', this.movie.id] } }]);
+    void this.router.navigate([{ outlets: { dialog: ['movies', this.movie.id] } }], {
+      relativeTo: this.activatedRoute.root
+    });
   }
 
   posterUrl(): string {

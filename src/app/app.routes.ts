@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { DialogGuard } from './core/guards/dialog.guard';
+import { MovieDetailsComponent } from './features/movie-details/components/movie-details/movie-details.component';
 
 export const routes: Routes = [
   {
@@ -34,9 +35,6 @@ export const routes: Routes = [
     path: 'movies/:id',
     outlet: 'dialog',
     canActivate: [DialogGuard],
-    loadComponent: () =>
-      import('./features/movie-details/components/dialog-outlet/dialog-outlet.component').then(
-        (m) => m.DialogOutletComponent,
-      ),
+    component: MovieDetailsComponent,
   },
 ];
