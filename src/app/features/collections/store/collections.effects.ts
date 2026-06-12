@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType, OnInitEffects } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
-import { catchError, map, of, switchMap, tap } from 'rxjs';
+import { catchError, map, of, switchMap } from 'rxjs';
 
+import { Collection, CollectionMovie } from '../../../core/models/collection.models';
 import { CollectionStorageService } from '../../../core/services/collection-storage.service';
 import { CollectionsActions } from './collections.actions';
 
@@ -34,7 +35,16 @@ export class CollectionsEffects implements OnInitEffects {
       ofType(CollectionsActions.createCollection),
       switchMap(({ title, description }) => {
         try {
-          const collection = this.storage.create(title, description);
+          const collections = this.storage.getAll();
+          const collection: Collection = {
+            id: crypto.randomUUID(),
+            title,
+            description,
+            movies: [],
+          };
+
+          this.storage.saveAll([...collections, collection]);
+
           return of(CollectionsActions.createCollectionSuccess({ collection }));
         } catch (error: unknown) {
           return of(
@@ -52,17 +62,24 @@ export class CollectionsEffects implements OnInitEffects {
       ofType(CollectionsActions.addMoviesToCollection),
       switchMap(({ collectionId, movies }) => {
         try {
-          let collection = this.storage.getAll().find((item) => item.id === collectionId);
+          const collections = this.storage.getAll();
+          const collection = collections.find((item) => item.id === collectionId);
 
           if (!collection) {
             throw new Error(`Collection not found: ${collectionId}`);
           }
 
-          for (const movie of movies) {
-            collection = this.storage.addMovie(collectionId, movie);
-          }
+          const updatedCollection: Collection = {
+            ...collection,
+            movies: this.mergeMovies(collection.movies, movies),
+          };
+          const updatedCollections = collections.map((item) =>
+            item.id === collectionId ? updatedCollection : item,
+          );
 
-          return of(CollectionsActions.addMoviesToCollectionSuccess({ collection }));
+          this.storage.saveAll(updatedCollections);
+
+          return of(CollectionsActions.addMoviesToCollectionSuccess({ collection: updatedCollection }));
         } catch (error: unknown) {
           return of(
             CollectionsActions.addMoviesToCollectionFailure({
@@ -79,8 +96,24 @@ export class CollectionsEffects implements OnInitEffects {
       ofType(CollectionsActions.addMovie),
       switchMap(({ collectionId, movie }) => {
         try {
-          const collection = this.storage.addMovie(collectionId, movie);
-          return of(CollectionsActions.addMovieSuccess({ collection }));
+          const collections = this.storage.getAll();
+          const collection = collections.find((item) => item.id === collectionId);
+
+          if (!collection) {
+            throw new Error(`Collection not found: ${collectionId}`);
+          }
+
+          const updatedCollection: Collection = {
+            ...collection,
+            movies: this.mergeMovies(collection.movies, [movie]),
+          };
+          const updatedCollections = collections.map((item) =>
+            item.id === collectionId ? updatedCollection : item,
+          );
+
+          this.storage.saveAll(updatedCollections);
+
+          return of(CollectionsActions.addMovieSuccess({ collection: updatedCollection }));
         } catch (error: unknown) {
           return of(
             CollectionsActions.addMovieFailure({
@@ -97,8 +130,24 @@ export class CollectionsEffects implements OnInitEffects {
       ofType(CollectionsActions.removeMovie),
       switchMap(({ collectionId, movieId }) => {
         try {
-          const collection = this.storage.removeMovie(collectionId, movieId);
-          return of(CollectionsActions.removeMovieSuccess({ collection }));
+          const collections = this.storage.getAll();
+          const collection = collections.find((item) => item.id === collectionId);
+
+          if (!collection) {
+            throw new Error(`Collection not found: ${collectionId}`);
+          }
+
+          const updatedCollection: Collection = {
+            ...collection,
+            movies: collection.movies.filter((movie) => movie.id !== movieId),
+          };
+          const updatedCollections = collections.map((item) =>
+            item.id === collectionId ? updatedCollection : item,
+          );
+
+          this.storage.saveAll(updatedCollections);
+
+          return of(CollectionsActions.removeMovieSuccess({ collection: updatedCollection }));
         } catch (error: unknown) {
           return of(
             CollectionsActions.removeMovieFailure({
@@ -113,17 +162,36 @@ export class CollectionsEffects implements OnInitEffects {
   deleteCollection$ = createEffect(() =>
     this.actions$.pipe(
       ofType(CollectionsActions.deleteCollection),
-      tap(({ collectionId }) => this.storage.delete(collectionId)),
-      map(({ collectionId }) => CollectionsActions.deleteCollectionSuccess({ collectionId })),
-      catchError((error: unknown) =>
-        of(
-          CollectionsActions.deleteCollectionFailure({
-            error: this.resolveErrorMessage(error),
-          }),
-        ),
-      ),
+      switchMap(({ collectionId }) => {
+        try {
+          const collections = this.storage.getAll();
+          const updatedCollections = collections.filter((collection) => collection.id !== collectionId);
+
+          this.storage.saveAll(updatedCollections);
+
+          return of(CollectionsActions.deleteCollectionSuccess({ collectionId }));
+        } catch (error: unknown) {
+          return of(
+            CollectionsActions.deleteCollectionFailure({
+              error: this.resolveErrorMessage(error),
+            }),
+          );
+        }
+      }),
     ),
   );
+
+  private mergeMovies(existing: CollectionMovie[], incoming: CollectionMovie[]): CollectionMovie[] {
+    const merged = [...existing];
+
+    for (const movie of incoming) {
+      if (!merged.some((item) => item.id === movie.id)) {
+        merged.push(movie);
+      }
+    }
+
+    return merged;
+  }
 
   private resolveErrorMessage(error: unknown): string {
     if (error instanceof Error) {

@@ -1,4 +1,3 @@
-import { AsyncPipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import {
@@ -7,28 +6,31 @@ import {
   MatDialogRef,
 } from '@angular/material/dialog';
 import { MatRadioModule } from '@angular/material/radio';
+import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 
-import { CollectionMovie } from '../../../core/models/collection.models';
+import { MovieSummary } from '../../../core/models/collection.models';
 import { CollectionsActions } from '../../../features/collections/store/collections.actions';
 import { selectAllCollections } from '../../../features/collections/store/collections.selectors';
 
 export interface AddToCollectionDialogData {
-  movies: CollectionMovie[];
+  movies: MovieSummary[];
 }
 
 @Component({
   selector: 'app-add-to-collection-dialog',
   standalone: true,
-  imports: [AsyncPipe, MatButtonModule, MatDialogModule, MatRadioModule],
+  imports: [MatButtonModule, MatDialogModule, MatRadioModule],
   templateUrl: './add-to-collection-dialog.component.html',
+  styleUrl: './add-to-collection-dialog.component.scss',
 })
 export class AddToCollectionDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<AddToCollectionDialogComponent>);
   private readonly store = inject(Store);
+  private readonly router = inject(Router);
   readonly data = inject<AddToCollectionDialogData>(MAT_DIALOG_DATA);
 
-  readonly collections$ = this.store.select(selectAllCollections);
+  readonly collections = this.store.selectSignal(selectAllCollections);
   readonly selectedCollectionId = signal<string | null>(null);
 
   selectCollection(collectionId: string): void {
@@ -49,5 +51,14 @@ export class AddToCollectionDialogComponent {
       }),
     );
     this.dialogRef.close(true);
+  }
+
+  cancel(): void {
+    this.dialogRef.close(false);
+  }
+
+  goToCreateCollection(): void {
+    this.dialogRef.close(false);
+    void this.router.navigate(['/collections/new']);
   }
 }

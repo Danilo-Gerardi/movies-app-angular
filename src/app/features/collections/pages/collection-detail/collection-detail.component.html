@@ -1,0 +1,60 @@
+@if (collection(); as collection) {
+  <main class="collection-detail">
+    <header class="collection-detail__header">
+      <div class="collection-detail__heading">
+        <a mat-button class="collection-detail__back" routerLink="/collections">Back to collections</a>
+        <h1 class="collection-detail__title">{{ collection.title }}</h1>
+        <p class="collection-detail__description">{{ collection.description }}</p>
+      </div>
+    </header>
+
+    @if (hasMovies()) {
+      <div class="collection-detail__movies">
+        @for (movie of collection.movies; track movie.id) {
+          <article class="collection-detail__movie">
+            <button
+              type="button"
+              class="collection-detail__movie-main"
+              [attr.aria-label]="'View details for ' + movie.title"
+              (click)="openMovieDetails(movie.id)"
+            >
+              @if (posterUrl(movie)) {
+                <img
+                  class="collection-detail__poster"
+                  [src]="posterUrl(movie)"
+                  [alt]="movie.title"
+                  loading="lazy"
+                />
+              } @else {
+                <div class="collection-detail__poster collection-detail__poster--placeholder">
+                  <mat-icon>movie</mat-icon>
+                </div>
+              }
+              <h2 class="collection-detail__movie-title">{{ movie.title }}</h2>
+            </button>
+
+            <button
+              type="button"
+              mat-icon-button
+              class="collection-detail__remove"
+              matTooltip="Remove from collection"
+              [attr.aria-label]="'Remove ' + movie.title + ' from collection'"
+              (click)="removeMovie(movie.id)"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </article>
+        }
+      </div>
+    } @else {
+      <section class="collection-detail__empty" aria-label="No movies in collection">
+        <mat-icon class="collection-detail__empty-icon" aria-hidden="true">movie_filter</mat-icon>
+        <h2 class="collection-detail__empty-title">No movies yet</h2>
+        <p class="collection-detail__empty-message">
+          This collection is empty. Search for movies and add them to start building your list.
+        </p>
+        <a mat-flat-button color="primary" routerLink="/home">Go to Search</a>
+      </section>
+    }
+  </main>
+}

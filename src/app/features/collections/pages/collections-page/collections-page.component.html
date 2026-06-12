@@ -1,0 +1,60 @@
+<main class="collections-page">
+  <header class="collections-page__header">
+    <h1 class="collections-page__title">Collections</h1>
+    <a mat-flat-button color="primary" routerLink="/collections/new">New Collection</a>
+  </header>
+
+  @if (hasCollections()) {
+    <div class="collections-page__grid">
+      @for (collection of collections(); track collection.id) {
+        <mat-card class="collections-page__card">
+          <mat-card-header class="collections-page__card-header">
+            <mat-card-title class="collections-page__card-title">{{ collection.title }}</mat-card-title>
+            <span
+              class="collections-page__badge"
+              matBadge="{{ movieCount(collection) }}"
+              matBadgeOverlap="false"
+              matBadgeDescription="Movies in collection"
+            >
+              Movies
+            </span>
+          </mat-card-header>
+
+          <mat-card-content class="collections-page__card-content">
+            <p class="collections-page__description">{{ collection.description }}</p>
+
+            <div class="collections-page__thumbnails" aria-hidden="true">
+              @for (movie of thumbnailMovies(collection); track movie.id) {
+                @if (posterUrl(movie.posterPath)) {
+                  <img
+                    class="collections-page__thumbnail"
+                    [src]="posterUrl(movie.posterPath)"
+                    [alt]="movie.title"
+                    loading="lazy"
+                  />
+                } @else {
+                  <div class="collections-page__thumbnail collections-page__thumbnail--placeholder">
+                    <mat-icon>movie</mat-icon>
+                  </div>
+                }
+              }
+            </div>
+          </mat-card-content>
+
+          <mat-card-actions class="collections-page__card-actions">
+            <a mat-button color="primary" [routerLink]="['/collections', collection.id]">View</a>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  } @else {
+    <section class="collections-page__empty" aria-label="No collections">
+      <mat-icon class="collections-page__empty-icon" aria-hidden="true">collections_bookmark</mat-icon>
+      <h2 class="collections-page__empty-title">No collections yet</h2>
+      <p class="collections-page__empty-message">
+        Create a collection to save and organize your favorite movies.
+      </p>
+      <a mat-flat-button color="primary" routerLink="/collections/new">Create your first collection</a>
+    </section>
+  }
+</main>

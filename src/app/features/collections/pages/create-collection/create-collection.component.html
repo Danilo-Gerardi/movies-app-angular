@@ -1,0 +1,47 @@
+<main class="create-collection">
+  <header class="create-collection__header">
+    <h1 class="create-collection__title">New Collection</h1>
+  </header>
+
+  <form class="create-collection__form" [formGroup]="form" (ngSubmit)="onSubmit()">
+    <mat-form-field class="create-collection__field" appearance="outline">
+      <mat-label>Title</mat-label>
+      <input
+        matInput
+        formControlName="title"
+        maxlength="80"
+        placeholder="e.g. Sci-Fi Favorites"
+      />
+      @if (titleErrorMessage(); as message) {
+        <mat-error>{{ message }}</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field class="create-collection__field" appearance="outline">
+      <mat-label>Description</mat-label>
+      <textarea
+        matInput
+        formControlName="description"
+        maxlength="300"
+        rows="5"
+        placeholder="Describe what this collection is about"
+      ></textarea>
+      <mat-hint align="end">{{ descriptionLength() }}/300</mat-hint>
+      @if (descriptionErrorMessage(); as message) {
+        <mat-error>{{ message }}</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="create-collection__actions">
+      <button mat-button type="button" (click)="onCancel()">Cancel</button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="form.invalid || form.pristine"
+      >
+        Create Collection
+      </button>
+    </div>
+  </form>
+</main>

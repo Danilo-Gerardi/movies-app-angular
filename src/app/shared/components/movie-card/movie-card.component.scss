@@ -1,3 +1,25 @@
+.movie-card-wrapper {
+  position: relative;
+
+  .movie-card__checkbox {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    background: rgb(255 255 255 / 0.92);
+    border-radius: 0.25rem;
+    padding: 0.125rem;
+  }
+
+  &:hover .movie-card__checkbox,
+  &--selection-mode .movie-card__checkbox,
+  &--selected .movie-card__checkbox {
+    opacity: 1;
+  }
+}
+
 .movie-card {
   display: flex;
   flex-direction: column;
@@ -48,4 +70,9 @@
     font-size: 0.8rem;
     color: #6b7280;
   }
+}
+
+.movie-card-wrapper--selected .movie-card {
+  outline: 2px solid #1976d2;
+  outline-offset: 2px;
 }

@@ -1,6 +1,14 @@
 <main class="search-page">
   <header class="search-page__header">
-    <h1 class="search-page__title">Search Movies</h1>
+    <div class="search-page__title-row">
+      <h1 class="search-page__title">Search Movies</h1>
+      <div class="search-page__actions">
+        <a mat-stroked-button routerLink="/collections">Collections</a>
+        <button mat-stroked-button type="button" (click)="toggleSelectionMode()">
+          {{ selectionMode() ? 'Done selecting' : 'Select movies' }}
+        </button>
+      </div>
+    </div>
 
     <form class="search-page__form" [formGroup]="searchForm" (ngSubmit)="onSubmit()">
       <mat-form-field class="search-page__field" appearance="outline">
@@ -35,7 +43,12 @@
     @if (results.length > 0) {
       <div class="search-page__grid">
         @for (movie of results; track movie.id) {
-          <app-movie-card [movie]="movie" />
+          <app-movie-card
+            [movie]="movie"
+            [selectionMode]="selectionMode()"
+            [selected]="isSelected(movie.id)"
+            (selectionToggle)="toggleMovieSelection(movie.id)"
+          />
         }
       </div>
 
@@ -53,5 +66,14 @@
     } @else if (!(loading$ | async) && (query$ | async)) {
       <p class="search-page__empty">No movies found.</p>
     }
+  }
+
+  @if (hasSelection()) {
+    <div class="search-page__selection-bar">
+      <p class="search-page__selection-label">{{ selectionBarLabel() }}</p>
+      <button mat-flat-button color="primary" type="button" (click)="openAddToCollectionDialog()">
+        Add to Collection
+      </button>
+    </div>
   }
 </main>
