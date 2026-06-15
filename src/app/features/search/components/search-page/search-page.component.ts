@@ -1,5 +1,5 @@
 import { AsyncPipe } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ViewEncapsulation } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -60,7 +60,7 @@ class SearchQueryErrorStateMatcher implements ErrorStateMatcher {
     PaginationComponent,
   ],
   templateUrl: './search-page.component.html',
-  styleUrl: './search-page.component.scss',
+  styleUrl: './search-page.component.scss'
 })
 export class SearchPageComponent {
   private readonly fb = inject(FormBuilder);

@@ -4,7 +4,7 @@
   </header>
 
   <form class="create-collection__form" [formGroup]="form" (ngSubmit)="onSubmit()">
-    <mat-form-field class="create-collection__field" appearance="outline">
+    <mat-form-field class="create-collection__field" appearance="fill">
       <mat-label>Title</mat-label>
       <input
         matInput
@@ -17,7 +17,7 @@
       }
     </mat-form-field>
 
-    <mat-form-field class="create-collection__field" appearance="outline">
+    <mat-form-field class="create-collection__field" appearance="fill">
       <mat-label>Description</mat-label>
       <textarea
         matInput

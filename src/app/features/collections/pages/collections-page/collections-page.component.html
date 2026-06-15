@@ -1,7 +1,10 @@
 <main class="collections-page">
   <header class="collections-page__header">
     <h1 class="collections-page__title">Collections</h1>
-    <a mat-flat-button color="primary" routerLink="/collections/new">New Collection</a>
+    <div class="collections-page__actions">
+      <a mat-stroked-button routerLink="/home">Home</a>
+      <a mat-flat-button color="primary" routerLink="/collections/new">New Collection</a>
+    </div>
   </header>
 
   @if (hasCollections()) {

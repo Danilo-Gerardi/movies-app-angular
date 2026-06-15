@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MAT_DIALOG_DATA,
@@ -23,6 +23,7 @@ export interface AddToCollectionDialogData {
   imports: [MatButtonModule, MatDialogModule, MatRadioModule],
   templateUrl: './add-to-collection-dialog.component.html',
   styleUrl: './add-to-collection-dialog.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddToCollectionDialogComponent {
   private readonly dialogRef = inject(MatDialogRef<AddToCollectionDialogComponent>);
